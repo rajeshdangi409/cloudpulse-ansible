@@ -1,0 +1,11 @@
+---
+- name: Install Docker
+  yum:
+    name: "{{ docker_package }}"
+    state: present
+
+- name: Start and enable Docker
+  systemd:
+    name: "{{ docker_service }}"
+    state: started
+    enabled: true

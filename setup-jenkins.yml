@@ -1,0 +1,9 @@
+---
+- name: Setup Jenkins Server
+  hosts: jenkins
+  become: true
+  roles:
+    - java
+    - docker
+    - jenkins
+    - aws-tools

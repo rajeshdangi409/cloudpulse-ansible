@@ -1,0 +1,14 @@
+---
+- name: Install AWS CLI
+  shell: |
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscli.zip
+    unzip -q /tmp/awscli.zip -d /tmp/
+    /tmp/aws/install
+  args:
+    creates: "{{ awscli_install_path }}"
+
+- name: Install kubectl
+  get_url:
+    url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+    dest: "{{ kubectl_dest }}"
+    mode: '0755'

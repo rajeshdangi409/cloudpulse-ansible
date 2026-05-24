@@ -1,0 +1,26 @@
+---
+- name: Add Jenkins repo
+  get_url:
+    url: "{{ jenkins_repo_url }}"
+    dest: /etc/yum.repos.d/jenkins.repo
+
+- name: Import Jenkins GPG key
+  rpm_key:
+    key: "{{ jenkins_gpg_key }}"
+
+- name: Install Jenkins
+  yum:
+    name: "{{ jenkins_package }}"
+    state: present
+
+- name: Add jenkins user to docker group
+  user:
+    name: "{{ jenkins_user }}"
+    groups: docker
+    append: true
+
+- name: Start and enable Jenkins
+  systemd:
+    name: "{{ jenkins_package }}"
+    state: started
+    enabled: true
