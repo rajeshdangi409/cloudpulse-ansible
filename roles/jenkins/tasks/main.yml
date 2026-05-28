@@ -24,3 +24,27 @@
     name: "{{ jenkins_package }}"
     state: started
     enabled: true
+
+- name: Create Jenkins temp directory
+  file:
+    path: /var/tmp/jenkins
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: '0755'
+
+- name: Configure Jenkins temp directory
+  lineinfile:
+    path: /usr/lib/systemd/system/jenkins.service
+    regexp: '^Environment="JAVA_OPTS='
+    line: 'Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.io.tmpdir=/var/tmp/jenkins"'
+    backup: yes
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: true
+
+- name: Restart Jenkins
+  systemd:
+    name: jenkins
+    state: restarted
