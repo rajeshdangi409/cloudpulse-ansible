@@ -12,3 +12,8 @@
     url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
     dest: "{{ kubectl_dest }}"
     mode: '0755'
+
+- name: Install Git
+  yum:
+    name: git
+    state: present
