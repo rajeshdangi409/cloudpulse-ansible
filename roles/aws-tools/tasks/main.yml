@@ -17,3 +17,14 @@
   yum:
     name: git
     state: present
+
+- name: Add HashiCorp repository
+  get_url:
+    url: https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+    dest: /etc/yum.repos.d/hashicorp.repo
+    mode: '0644'
+
+- name: Install Terraform
+  yum:
+    name: terraform
+    state: present

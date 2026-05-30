@@ -5,5 +5,5 @@
   roles:
     - java
     - docker
-    - jenkins
     - aws-tools
+    - jenkins
