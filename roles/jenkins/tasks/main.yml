@@ -48,3 +48,11 @@
   systemd:
     name: jenkins
     state: restarted
+
+- name: Install Python3 and pip
+  yum:
+    name:
+      - python3
+      - python3-pip
+    state: present
+    update_cache: yes
