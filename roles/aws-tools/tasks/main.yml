@@ -3,6 +3,11 @@
 # AWS Tools Role — cloud/infra tools needed by Jenkins:
 # AWS CLI (ECR/EKS), kubectl (deploy), Terraform (infra), Git
 # -------------------------------------------------------
+- name: Install unzip
+  ansible.builtin.dnf:
+    name: unzip
+    state: present
+
 - name: Install AWS CLI
   ansible.builtin.shell: |
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscli.zip
