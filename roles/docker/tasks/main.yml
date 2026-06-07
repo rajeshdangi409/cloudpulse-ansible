@@ -1,0 +1,41 @@
+---
+# -------------------------------------------------------
+# Docker Role — Jenkins uses this to build/push images
+# -------------------------------------------------------
+- name: Install Docker
+  ansible.builtin.dnf:
+    name: "{{ docker_package }}"
+    state: present
+  notify: Restart Docker
+
+- name: Start and enable Docker
+  ansible.builtin.systemd_service:
+    name: "{{ docker_service }}"
+    state: started
+    enabled: true
+
+# Run any pending handlers (restart) now so Docker is ready before verification
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+# -------------------------------------------------------
+# Verification — confirm the Docker daemon is running
+# -------------------------------------------------------
+- name: Verify Docker version
+  ansible.builtin.command: docker --version
+  register: docker_version_check
+  changed_when: false
+
+- name: Check Docker service is active
+  ansible.builtin.command: systemctl is-active {{ docker_service }}
+  register: docker_active_check
+  changed_when: false
+  failed_when: docker_active_check.stdout != "active"
+
+- name: Assert Docker is running
+  ansible.builtin.assert:
+    that:
+      - docker_version_check.rc == 0
+      - docker_active_check.stdout == "active"
+    fail_msg: "Docker daemon is down — builds will fail"
+    success_msg: "Docker installed & running: {{ docker_version_check.stdout }}"

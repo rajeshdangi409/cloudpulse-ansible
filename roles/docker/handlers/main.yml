@@ -1,0 +1,6 @@
+---
+# Restart the daemon when the Docker package is updated
+- name: Restart Docker
+  ansible.builtin.systemd_service:
+    name: "{{ docker_service }}"
+    state: restarted

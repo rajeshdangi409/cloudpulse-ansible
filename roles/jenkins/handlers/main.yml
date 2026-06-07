@@ -1,0 +1,11 @@
+---
+# A daemon-reload is required when the systemd unit file (jenkins.service) changes
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+# Restart Jenkins on a config or group/permission change
+- name: Restart Jenkins
+  ansible.builtin.systemd_service:
+    name: "{{ jenkins_package }}"
+    state: restarted

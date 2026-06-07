@@ -1,0 +1,27 @@
+---
+# -------------------------------------------------------
+# Java Role — Java is required to run Jenkins
+# -------------------------------------------------------
+- name: Install Java (Amazon Corretto)
+  ansible.builtin.dnf:
+    name: "{{ java_package }}"
+    state: present
+
+# -------------------------------------------------------
+# Verification — confirm Java installed correctly
+# -------------------------------------------------------
+- name: Verify Java is installed
+  ansible.builtin.command: java -version
+  register: java_check
+  changed_when: false
+
+- name: Assert Java is available
+  ansible.builtin.assert:
+    that:
+      - java_check.rc == 0
+    fail_msg: "Java did not install — Jenkins will not run"
+    success_msg: "Java successfully installed"
+
+- name: Show installed Java version
+  ansible.builtin.debug:
+    msg: "{{ java_check.stderr_lines | first }}"

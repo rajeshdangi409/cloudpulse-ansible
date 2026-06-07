@@ -1,0 +1,14 @@
+# Ansible
+*.retry
+
+# Secrets / keys
+*.pem
+vault-pass.txt
+*.vault
+
+# Local backups
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,105 @@
+---
+# -------------------------------------------------------
+# AWS Tools Role — cloud/infra tools needed by Jenkins:
+# AWS CLI (ECR/EKS), kubectl (deploy), Terraform (infra), Git
+# -------------------------------------------------------
+- name: Install AWS CLI
+  ansible.builtin.shell: |
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscli.zip
+    unzip -q /tmp/awscli.zip -d /tmp/
+    /tmp/aws/install
+  args:
+    creates: "{{ awscli_install_path }}"
+
+- name: Install kubectl
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+    dest: "{{ kubectl_dest }}"
+    mode: '0755'
+
+- name: Install Git
+  ansible.builtin.dnf:
+    name: git
+    state: present
+
+- name: Add HashiCorp repository
+  ansible.builtin.get_url:
+    url: https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+    dest: /etc/yum.repos.d/hashicorp.repo
+    mode: '0644'
+
+- name: Install Terraform
+  ansible.builtin.dnf:
+    name: terraform
+    state: present
+
+- name: Install Flux CLI
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -s https://fluxcd.io/install.sh | bash
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/flux
+
+- name: Install Trivy (container image scanner)
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin {{ trivy_version }}
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/trivy
+
+# -------------------------------------------------------
+# Verification — check each tool's version to confirm install
+# -------------------------------------------------------
+- name: Verify AWS CLI
+  ansible.builtin.command: aws --version
+  register: aws_check
+  changed_when: false
+
+- name: Verify kubectl
+  ansible.builtin.command: kubectl version --client
+  register: kubectl_check
+  changed_when: false
+
+- name: Verify Terraform
+  ansible.builtin.command: terraform version
+  register: terraform_check
+  changed_when: false
+
+- name: Verify Git
+  ansible.builtin.command: git --version
+  register: git_check
+  changed_when: false
+
+- name: Verify Flux CLI
+  ansible.builtin.command: flux --version
+  register: flux_check
+  changed_when: false
+
+- name: Verify Trivy
+  ansible.builtin.command: trivy --version
+  register: trivy_check
+  changed_when: false
+
+- name: Assert all cloud tools installed
+  ansible.builtin.assert:
+    that:
+      - aws_check.rc == 0
+      - kubectl_check.rc == 0
+      - terraform_check.rc == 0
+      - git_check.rc == 0
+      - flux_check.rc == 0
+      - trivy_check.rc == 0
+    fail_msg: "One of the cloud tools failed to install — the pipeline will fail"
+    success_msg: "AWS CLI, kubectl, Terraform, Git, Flux & Trivy are all ready"
+
+- name: Show installed tool versions
+  ansible.builtin.debug:
+    msg:
+      - "{{ aws_check.stdout }}"
+      - "kubectl: {{ kubectl_check.stdout_lines | first }}"
+      - "{{ terraform_check.stdout_lines | first }}"
+      - "{{ git_check.stdout }}"
+      - "{{ flux_check.stdout }}"
+      - "{{ trivy_check.stdout_lines | first }}"

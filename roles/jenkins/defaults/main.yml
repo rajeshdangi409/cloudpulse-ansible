@@ -1,0 +1,18 @@
+---
+# Jenkins package source
+jenkins_repo_url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+jenkins_gpg_key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+jenkins_package: jenkins
+jenkins_user: jenkins
+jenkins_port: 8080
+
+# Custom temp directory — Jenkins hit permission issues on the default /tmp,
+# so we create a dedicated tmp dir and point JAVA_OPTS at it
+jenkins_tmp_dir: /var/tmp/jenkins
+jenkins_service_file: /usr/lib/systemd/system/jenkins.service
+jenkins_java_opts: "-Djava.awt.headless=true -Djava.io.tmpdir={{ jenkins_tmp_dir }}"
+
+# Python (for Jenkins agents / pipeline helpers)
+jenkins_python_packages:
+  - python3
+  - python3-pip
