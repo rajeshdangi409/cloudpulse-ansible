@@ -52,7 +52,7 @@
     - Restart Jenkins
 
 - name: Ensure Jenkins is started and enabled
-  ansible.builtin.systemd_service:
+  ansible.builtin.service:
     name: "{{ jenkins_package }}"
     state: started
     enabled: true
