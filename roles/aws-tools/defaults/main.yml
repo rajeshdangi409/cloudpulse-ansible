@@ -2,4 +2,4 @@
 kubectl_version: "v1.31.0"
 kubectl_dest: /usr/local/bin/kubectl
 awscli_install_path: /usr/local/bin/aws
-trivy_version: "v0.57.0" # container image vulnerability scanner (pinned for reproducibility)
+# trivy_version: "v0.57.0" # container image vulnerability scanner (pinned for reproducibility)
